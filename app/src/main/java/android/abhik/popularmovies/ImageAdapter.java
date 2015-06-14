@@ -10,27 +10,33 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+
 /**
  * Created by abmitra on 6/14/2015.
  */
 public class ImageAdapter extends BaseAdapter {
     private Context mContext;
     LayoutInflater inflater;
+    ArrayList<Movie> movies = new ArrayList<Movie>();
     public ImageAdapter(Context c) {
         mContext = c;
         inflater = LayoutInflater.from(c);
     }
-
+    public void setData(ArrayList<Movie> movies){
+        this.movies = movies;
+        notifyDataSetChanged();
+    }
     public int getCount() {
-        return 15;
+        return movies.size();
     }
 
     public Object getItem(int position) {
-        return null;
+        return movies.get(position);
     }
 
     public long getItemId(int position) {
-        return 0;
+        return movies.get(position).getId();
     }
 
     // create a new ImageView for each item referenced by the Adapter
@@ -47,10 +53,12 @@ public class ImageAdapter extends BaseAdapter {
         }
         pictureView = (ImageView) v.getTag(R.id.picture);
         titleView = (TextView) v.getTag(R.id.text);
-        titleView.setText("Thsi si a test");
+        Movie movie = movies.get(position);
+        titleView.setText(movie.getOriginal_title());
+        String url ="http://image.tmdb.org/t/p/w185"+movie.getImageUrl();
         Picasso
                 .with(mContext)
-                .load("http://i.imgur.com/DvpvklR.png")
+                .load(url)
                 .into(pictureView);
         return v;
     }
