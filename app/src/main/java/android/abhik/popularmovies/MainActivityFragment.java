@@ -13,6 +13,8 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
+import java.util.ArrayList;
+
 
 /**
  * A placeholder fragment containing a simple view.
@@ -22,7 +24,6 @@ public class MainActivityFragment extends Fragment {
     private String TAG = "PopularMovies - MainActivityFragment";
     PopularMovies popularMovies;
     ImageAdapter imageAdapter;
-    private int count =0;
     boolean enableInfiniteScroll = true;
     String sortByChoice;
     public MainActivityFragment() {
@@ -34,7 +35,7 @@ public class MainActivityFragment extends Fragment {
         super.onStart();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
         String sorting = prefs.getString(getActivity().getString(R.string.pref_sort_order_key),
-                getActivity().getString(R.string.pref_sort_order_default));
+                getString(R.string.pref_sort_popularity));
         //Reload only if there is a change in the sorting order
         Log.i(TAG, "Activity Started");
         if(sorting != sortByChoice){
@@ -42,17 +43,54 @@ public class MainActivityFragment extends Fragment {
             popularMovies.resetPage();
             Log.i(TAG, "Resetting Page");
             popularMovies.fetchMoviesFromServer(sortByChoice);
+        } else {
+            popularMovies.reRenderGrid();
         }
 
 
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList("movies", imageAdapter.getMovieArray());
+        outState.putInt("nextPage", popularMovies.getNextPage());
+        outState.putBoolean("shouldFetchMore", popularMovies.isShouldFetchMore());
+        outState.putString("sortByChoice", sortByChoice);
+        imageAdapter.getMovieArray();
+        super.onSaveInstanceState(outState);
+
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        if(savedInstanceState!=null && imageAdapter!=null){
+            ArrayList<Movie> movies = savedInstanceState.getParcelableArrayList("movies");
+            int nextPage = savedInstanceState.getInt("nextPage");
+            Boolean shouldFetchMore = savedInstanceState.getBoolean("shouldFetchMore");
+            String sortByChoice = savedInstanceState.getString("sortByChoice");
+
+        } else {
+
+        }
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        ArrayList<Movie> movies = new ArrayList<Movie>() ;
+        int nextPage = 1;
+        Boolean shouldFetchMore = true;
+        if(savedInstanceState!=null){
+            movies = savedInstanceState.getParcelableArrayList("movies");
+            nextPage = savedInstanceState.getInt("nextPage");
+            shouldFetchMore = savedInstanceState.getBoolean("shouldFetchMore");
+            sortByChoice = savedInstanceState.getString("sortByChoice");
+        }
         View v= inflater.inflate(R.layout.fragment_main, container, false);
         imageAdapter = new ImageAdapter(getActivity().getApplicationContext());
-        popularMovies = new PopularMovies(1,imageAdapter,getActivity().getApplicationContext());
+        popularMovies = new PopularMovies(nextPage, shouldFetchMore,
+                imageAdapter,getActivity().getApplicationContext(),movies);
         GridView gridview = (GridView) v.findViewById(R.id.gridview);
         if(gridview!=null){
             gridview.setAdapter(imageAdapter);
@@ -74,7 +112,11 @@ public class MainActivityFragment extends Fragment {
 
                 @Override
                 public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                    if ((totalItemCount - firstVisibleItem - visibleItemCount) <= 6 && enableInfiniteScroll && sortByChoice!=null) {
+
+                    if ((totalItemCount - firstVisibleItem - visibleItemCount) <= 6
+                            && enableInfiniteScroll
+                            && sortByChoice!=null
+                            && totalItemCount!=0) {
                         popularMovies.fetchMoviesFromServer(sortByChoice);
 
 

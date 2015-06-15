@@ -84,7 +84,13 @@ public class FetchMovieAsyncTask extends AsyncTask<String,Integer,  ArrayList<Mo
 
             }
         } catch (JSONException e ){
-
+            Log.e(TAG, "Internet is probably off", e);
+        }
+        catch (NullPointerException e){
+            Log.e(TAG, "Internet is probably off", e);
+        }
+        catch (Exception e){
+            Log.e(TAG, "Internet is probably off", e);
         }
         return movies;
 

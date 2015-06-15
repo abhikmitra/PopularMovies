@@ -1,12 +1,16 @@
 package android.abhik.popularmovies;
 
-import java.io.Serializable;
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by abmitra on 6/14/2015.
  */
-public class Movie implements Serializable {
+public class Movie implements Parcelable {
     public String getImageUrl() {
         return imageUrl;
     }
@@ -57,5 +61,44 @@ public class Movie implements Serializable {
         this.release_date = release_date;
         this.id = id;
         this.popularity = popularity;
+    }
+    public Movie(Parcel in){
+        imageUrl = in.readString();
+        synopsis=in.readString();
+        original_title = in.readString();
+        vote_average = in.readDouble();
+        try{
+            release_date = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH).parse(in.readString());
+        } catch (Exception e){
+            release_date = new Date();
+        }
+
+        id = in.readLong();
+        popularity = in.readDouble();
+    }
+    public static final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>() {
+        public Movie createFromParcel(Parcel in) {
+            return new Movie(in);
+        }
+
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(imageUrl);
+        dest.writeString(synopsis);
+        dest.writeString(original_title);
+        dest.writeDouble(vote_average);
+        dest.writeString(new SimpleDateFormat("dd MMM yyyy").format(release_date));
+        dest.writeLong(id);
+        dest.writeDouble(popularity);
     }
 }

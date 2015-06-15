@@ -27,6 +27,10 @@ public class ImageAdapter extends BaseAdapter {
         this.movies = movies;
         notifyDataSetChanged();
     }
+
+    public ArrayList<Movie> getMovieArray(){
+        return movies;
+    }
     public int getCount() {
         return movies.size();
     }
