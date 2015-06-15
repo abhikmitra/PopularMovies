@@ -1,0 +1,48 @@
+<ScrollView
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+        android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:orientation="vertical"
+        tools:context="android.abhik.popularmovies.DetailActivityFragment">
+
+        <TextView  android:id="@+id/movie_title" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:gravity="center"
+            android:textSize="@dimen/abc_text_size_headline_material"
+            android:layout_marginBottom="2dp" />
+        <View
+            style="@style/horizontalLine"/>
+        <android.abhik.popularmovies.SquareImageView android:id="@+id/movie_image"
+            style="@style/movieImage.movieDetailImage"/>
+        <View
+            style="@style/horizontalLine"/>
+        <TextView android:layout_gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/movie_synopsys"
+            android:layout_marginBottom="10dp"/>
+        <View
+            style="@style/horizontalLine"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView android:layout_marginLeft="0dp"
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:gravity="left"
+                android:layout_height="wrap_content" android:id="@+id/movie_release_date" android:textSize="@dimen/abc_text_size_medium_material" />
+            <TextView
+                android:layout_marginRight="0dp"
+                android:layout_weight="1"
+                android:layout_width="wrap_content" android:gravity="right"
+                android:layout_height="wrap_content" android:id="@+id/movie_rating" android:textSize="@dimen/abc_text_size_medium_material" />
+        </LinearLayout>
+    </LinearLayout>
+
+</ScrollView>

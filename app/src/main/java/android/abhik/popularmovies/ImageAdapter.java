@@ -55,10 +55,9 @@ public class ImageAdapter extends BaseAdapter {
         titleView = (TextView) v.getTag(R.id.text);
         Movie movie = movies.get(position);
         titleView.setText(movie.getOriginal_title());
-        String url ="http://image.tmdb.org/t/p/w185"+movie.getImageUrl();
         Picasso
                 .with(mContext)
-                .load(url)
+                .load(movie.getImageUrl())
                 .into(pictureView);
         return v;
     }

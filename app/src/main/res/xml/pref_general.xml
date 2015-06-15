@@ -3,12 +3,11 @@
 
 
     <ListPreference
-        android:key="example_list"
-        android:title="@string/pref_sort_order"
-        android:defaultValue="-1"
+        android:key="@string/pref_sort_order_key"
+        android:title="@string/pref_sort_order_label"
+        android:defaultValue="0"
         android:entries="@array/pref_sort_order_titles"
         android:entryValues="@array/pref_sort_order_values"
-        android:negativeButtonText="@null"
-        android:positiveButtonText="@null" />
+        />
 
 </PreferenceScreen>

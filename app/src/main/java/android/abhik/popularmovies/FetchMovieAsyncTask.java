@@ -23,9 +23,11 @@ import java.util.Locale;
 /**
  * Created by abmitra on 6/14/2015.
  */
-public class FetchMovieAsyncTask extends AsyncTask<Integer,Integer,  ArrayList<Movie>> {
+public class FetchMovieAsyncTask extends AsyncTask<String,Integer,  ArrayList<Movie>> {
     private String TAG = "PopularMovies - FetchMoviesAsyncTask";
     private PopularMovies popularMovies;
+    private final String URL = "api.themoviedb.org";
+    private final String API_KEY = "a670cb5c49630b38e1ca06f0cd82b8eb";
 
     public FetchMovieAsyncTask(PopularMovies popularMovies){
         super();
@@ -34,18 +36,19 @@ public class FetchMovieAsyncTask extends AsyncTask<Integer,Integer,  ArrayList<M
     }
 
     @Override
-    protected ArrayList<Movie> doInBackground(Integer... params) {
-        Integer pageNumber = params[0];
+    protected ArrayList<Movie> doInBackground(String... params) {
+        String pageNumber = params[0];
+        String sort = params[1];
         Uri.Builder builder = new Uri.Builder();
         builder
                 .scheme("http")
-                .authority("api.themoviedb.org")
+                .authority(URL)
                 .appendPath("3")
                 .appendPath("discover")
                 .appendPath("movie")
-                .appendQueryParameter("sort_by", "popularity.desc")
+                .appendQueryParameter("sort_by", sort)
                 .appendQueryParameter("page", pageNumber.toString())
-                .appendQueryParameter("api_key", "a670cb5c49630b38e1ca06f0cd82b8eb");
+                .appendQueryParameter("api_key", API_KEY);
         String jsonStr = getDataFromServer(builder.build().toString());
         return getPopularMovies(jsonStr);
     }
@@ -59,7 +62,7 @@ public class FetchMovieAsyncTask extends AsyncTask<Integer,Integer,  ArrayList<M
             for(int i =0;i< list.length();i++){
                 JSONObject item = list.getJSONObject(i);
                 String date = item.getString("release_date");
-                SimpleDateFormat format = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH);
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-d", Locale.ENGLISH);
                 Date release_date = new Date();
                 Movie movie;
                 try {
@@ -72,9 +75,10 @@ public class FetchMovieAsyncTask extends AsyncTask<Integer,Integer,  ArrayList<M
                             item.getString("poster_path"),
                             item.getString("original_title"),
                             item.getString("overview"),
-                            item.getString("vote_average"),
+                            item.getDouble("vote_average"),
                             release_date,
-                            item.getLong("id"));
+                            item.getLong("id"),
+                            item.getDouble("popularity"));
                     movies.add(movie);
                 }
 
