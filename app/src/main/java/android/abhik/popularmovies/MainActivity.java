@@ -1,18 +1,46 @@
 package android.abhik.popularmovies;
 
+import android.app.Fragment;
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements MainActivityFragment.Callback{
+    private boolean mTwoPane;
+    private static final String DETAILFRAGMENT_TAG = "DFTAG";
+
+    @Override
+    public void onItemSelected(Movie movie) {
+        if (mTwoPane) {
+            Bundle args = new Bundle();
+            args.putParcelable(Movie.class.getName(), movie);
+            Fragment fragment = new DetailActivityFragment();
+            fragment.setArguments(args);
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.movie_detail_container, fragment, DETAILFRAGMENT_TAG)
+                    .commit();
+        } else {
+            Intent intent = new Intent(this, DetailActivity.class);
+            intent.putExtra(Movie.class.getName(), movie);
+            startActivity(intent);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if(findViewById(R.id.movie_detail_container)!=null) {
+            mTwoPane = true;
+            getFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.movie_detail_container,new DetailActivityFragment(),DETAILFRAGMENT_TAG);
+        } else {
+            mTwoPane = false;
+        }
     }
 
 

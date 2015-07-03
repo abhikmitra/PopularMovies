@@ -21,11 +21,40 @@
             style="@style/movieImage.movieDetailImage"/>
         <View
             style="@style/horizontalLine"/>
+       <LinearLayout
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content" android:orientation="horizontal">
+           <TextView
+               android:layout_width="wrap_content"
+               android:layout_height="match_parent"
+               android:text="Add to Favourites"/>
+           <ImageButton android:id="@+id/favorite"
+               android:layout_width="wrap_content"
+               android:layout_height="fill_parent"
+               android:src="@drawable/abc_btn_rating_star_off_mtrl_alpha"
+               android:background="#00ffffff"
+               />
+       </LinearLayout>
+        <View
+            style="@style/horizontalLine"/>
         <TextView android:layout_gravity="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/movie_synopsys"
             android:layout_marginBottom="10dp"/>
+        <View
+            style="@style/horizontalLine"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/trailer" android:orientation="vertical">
+
+        </LinearLayout>
+        <View
+            style="@style/horizontalLine"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:orientation="vertical" android:id="@+id/reviews"></LinearLayout>
         <View
             style="@style/horizontalLine"/>
         <LinearLayout

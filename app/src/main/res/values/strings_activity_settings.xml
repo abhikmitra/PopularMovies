@@ -6,12 +6,15 @@
     <string-array name="pref_sort_order_titles">
         <item>Popularity (Descending)</item>
         <item>Highest Rated (Descending)</item>
+        <item>Favorites</item>
     </string-array>
     <string-array name="pref_sort_order_values">
         <item>popularity.desc</item>
         <item>vote_average.desc</item>
+        <item>favorites</item>
     </string-array>
     <string name="pref_sort_popularity">popularity.desc</string>
     <string name="pref_sort_vote">vote_average.desc</string>
+    <string name="pref_favorites">favorites</string>
 
 </resources>

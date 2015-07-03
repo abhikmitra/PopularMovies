@@ -1,5 +1,7 @@
 package android.abhik.popularmovies;
 
+import android.abhik.constants.Constants;
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -53,8 +55,32 @@ public class Movie implements Parcelable {
     private final String PREFIX_URL = "http://image.tmdb.org/t/p/w185";
 
     long id;
+    long _ID;
+    static Date getDateFromString(String date){
+       try{
+           return new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH).parse(date);
+        } catch (Exception e){
+            return new Date();
+        }
+    }
+    public Movie(Cursor c){
+        this(
+                c.getString(Constants.COL_MOVIE_POSTER),
+                c.getString(Constants.COL_MOVIE_TITLE),
+                c.getString(Constants.COL_MOVIE_OVERVIEW),
+                c.getDouble(Constants.COL_MOVIE_RATING),
+                getDateFromString(c.getString(Constants.COL_MOVIE_RELEASE_DATE)),
+                c.getLong(Constants.COL_MOVIE_TMDB_ID),
+                c.getDouble(Constants.COL_MOVIE_POPULARITY)
+
+        );
+        this._ID = c.getLong(Constants.COL_MOVIE_ID);
+    }
     public Movie(String imageUrl, String original_title, String synopsis,Double vote_average, Date release_date, long id, Double popularity){
-        this.imageUrl = PREFIX_URL+imageUrl;
+        if(imageUrl.indexOf("http")==-1){
+            this.imageUrl = PREFIX_URL+imageUrl;
+        }
+
         this.original_title = original_title;
         this.synopsis = synopsis;
         this.vote_average = vote_average;

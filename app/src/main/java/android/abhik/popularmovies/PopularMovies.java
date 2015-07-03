@@ -1,6 +1,10 @@
 package android.abhik.popularmovies;
 
+import android.abhik.data.MovieContract;
+import android.accounts.Account;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.os.Bundle;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -27,13 +31,15 @@ public class PopularMovies {
     private ImageAdapter imageAdapter;
     private boolean isLoading ;
     private Context context;
-    public PopularMovies(int nextPage, Boolean shouldFetchMore, ImageAdapter imageAdapter, Context context, ArrayList<Movie> movies){
+    private Account mAccount;
+    public PopularMovies(int nextPage, Boolean shouldFetchMore, ImageAdapter imageAdapter, Context context, ArrayList<Movie> movies,Account mAccount){
         this.nextPage = nextPage;
         this.movies =movies;
         this.shouldFetchMore = shouldFetchMore;
         this.imageAdapter = imageAdapter;
         isLoading = false;
         this.context = context;
+        this.mAccount = mAccount;
     }
     public void populateMovies(ArrayList<Movie> movies){
 
@@ -43,7 +49,6 @@ public class PopularMovies {
         this.movies.addAll(movies);
         nextPage++;
         isLoading = false;
-        imageAdapter.setData(this.movies);
         if(movies.size()==0){
             int duration = Toast.LENGTH_SHORT;
             Toast toast = Toast.makeText(context, "Could not fetch data", duration);
@@ -52,17 +57,23 @@ public class PopularMovies {
 
 
     }
-    public void reRenderGrid(){
-        imageAdapter.setData(movies);
-    }
-    public void resetPage(){
+     public void resetPage(){
         nextPage = 1;
-        movies.clear();
+        //movies.clear();
     }
+
     public void fetchMoviesFromServer(String sortBy){
         if(!isLoading){
-            new FetchMovieAsyncTask(this).execute(""+nextPage, sortBy);
+            //new FetchMovieAsyncTask(this).execute(""+nextPage, sortBy);
             isLoading = true;
+            Bundle settingsBundle = new Bundle();
+            settingsBundle.putBoolean(
+                    ContentResolver.SYNC_EXTRAS_MANUAL, true);
+            settingsBundle.putBoolean(
+                    ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+            settingsBundle.putInt("nextPage",nextPage);
+            settingsBundle.putString("sortBy",sortBy);
+            ContentResolver.requestSync(mAccount, MovieContract.CONTENT_AUTHORITY, settingsBundle);
         }
 
     }

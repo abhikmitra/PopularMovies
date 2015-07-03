@@ -15,72 +15,47 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
 
 /**
  * Created by abmitra on 6/14/2015.
  */
-public class FetchMovieAsyncTask extends AsyncTask<String,Integer,  ArrayList<Movie>> {
+public class FetchTrailerAsyncTask extends AsyncTask<Long,Integer,  ArrayList<String>> {
     private String TAG = "PopularMovies - FetchMoviesAsyncTask";
-    private PopularMovies popularMovies;
     private final String URL = "api.themoviedb.org";
     private final String API_KEY = "a670cb5c49630b38e1ca06f0cd82b8eb";
-
-    public FetchMovieAsyncTask(PopularMovies popularMovies){
+    private Event event;
+    public FetchTrailerAsyncTask(Event event){
         super();
-        this.popularMovies = popularMovies;
+        this.event=event;
 
     }
 
     @Override
-    protected ArrayList<Movie> doInBackground(String... params) {
-        String pageNumber = params[0];
-        String sort = params[1];
+    protected ArrayList<String> doInBackground(Long... params) {
+        Long id = params[0];
         Uri.Builder builder = new Uri.Builder();
         builder
                 .scheme("http")
                 .authority(URL)
                 .appendPath("3")
-                .appendPath("discover")
                 .appendPath("movie")
-                .appendQueryParameter("sort_by", sort)
-                .appendQueryParameter("page", pageNumber.toString())
+                .appendPath(Long.toString(id))
+                .appendPath("videos")
                 .appendQueryParameter("api_key", API_KEY);
         String jsonStr = getDataFromServer(builder.build().toString());
-        return getPopularMovies(jsonStr);
+        return getTrailers(jsonStr);
     }
 
-    protected ArrayList<Movie> getPopularMovies(String jsonStr){
-        ArrayList<Movie> movies = new ArrayList<>();
+    protected ArrayList<String> getTrailers(String jsonStr){
+        ArrayList<String> trailer = new ArrayList<>();
         try {
             JSONObject jsonObj = new JSONObject(jsonStr);
-            int page = jsonObj.getInt("page");
             JSONArray list = jsonObj.getJSONArray("results");
             for(int i =0;i< list.length();i++){
                 JSONObject item = list.getJSONObject(i);
-                String date = item.getString("release_date");
-                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-d", Locale.ENGLISH);
-                Date release_date = new Date();
-                Movie movie;
-                try {
-                    release_date = format.parse(date);
-
-                } catch (Exception e){
-                    release_date = new Date();
-                } finally {
-                    movie = new Movie(
-                            item.getString("poster_path"),
-                            item.getString("original_title"),
-                            item.getString("overview"),
-                            item.getDouble("vote_average"),
-                            release_date,
-                            item.getLong("id"),
-                            item.getDouble("popularity"));
-                    movies.add(movie);
-                }
+                String t = item.getString("key");
+                trailer.add(t);
 
             }
         } catch (JSONException e ){
@@ -92,7 +67,7 @@ public class FetchMovieAsyncTask extends AsyncTask<String,Integer,  ArrayList<Mo
         catch (Exception e){
             Log.e(TAG, "Internet is probably off", e);
         }
-        return movies;
+        return trailer;
 
 
     }
@@ -151,8 +126,12 @@ public class FetchMovieAsyncTask extends AsyncTask<String,Integer,  ArrayList<Mo
         }
     }
     @Override
-    protected void onPostExecute(ArrayList<Movie> movies) {
-        popularMovies.populateMovies(movies);
-        super.onPostExecute(movies);
+    protected void onPostExecute(ArrayList<String> trailer) {
+        super.onPostExecute(trailer);
+        event.onTrailerLoaded(trailer);
+    }
+
+    public interface Event {
+        void onTrailerLoaded(ArrayList<String> trailer);
     }
 }
