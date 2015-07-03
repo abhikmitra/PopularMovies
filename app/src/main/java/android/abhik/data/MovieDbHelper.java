@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class MovieDbHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     static final String DATABASE_NAME = "movies.db";
     public MovieDbHelper(Context context) {
@@ -20,8 +20,8 @@ public class MovieDbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         final String SQL_CREATE_MOVIE_TABLE = "CREATE TABLE " + MovieContract.MovieEntry.TABLE_NAME + " (" +
-                MovieContract.MovieEntry._ID + " INTEGER PRIMARY KEY," +
-                MovieContract.MovieEntry.COLUMN_MOVIE_ID+ " TEXT NOT NULL, " +
+                MovieContract.MovieEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                MovieContract.MovieEntry.COLUMN_MOVIE_ID+ " TEXT UNIQUE NOT NULL, " +
                 MovieContract.MovieEntry.COLUMN_OVERVIEW + " TEXT NOT NULL, " +
                 MovieContract.MovieEntry.COLUMN_POPULARITY+ " REAL NOT NULL, " +
                 MovieContract.MovieEntry.COLUMN_RATING + " REAL NOT NULL, " +
@@ -30,8 +30,8 @@ public class MovieDbHelper extends SQLiteOpenHelper {
                 MovieContract.MovieEntry.COLUMN_TITLE + " TEXT NOT NULL " +
                 " );";
         final String SQL_CREATE_FAV_TABLE = "CREATE TABLE " + MovieContract.FavoriteEntry.TABLE_NAME + " (" +
-                MovieContract.MovieEntry._ID + " INTEGER PRIMARY KEY," +
-                MovieContract.MovieEntry.COLUMN_MOVIE_ID+ " TEXT NOT NULL, " +
+                MovieContract.MovieEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                MovieContract.MovieEntry.COLUMN_MOVIE_ID+ " TEXT UNIQUE NOT NULL, " +
                 MovieContract.MovieEntry.COLUMN_OVERVIEW + " TEXT NOT NULL, " +
                 MovieContract.MovieEntry.COLUMN_POPULARITY+ " REAL NOT NULL, " +
                 MovieContract.MovieEntry.COLUMN_RATING + " REAL NOT NULL, " +

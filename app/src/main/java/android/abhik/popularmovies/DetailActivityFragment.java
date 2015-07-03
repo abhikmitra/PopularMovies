@@ -59,7 +59,7 @@ public class DetailActivityFragment extends Fragment implements FetchTrailerAsyn
             ImageButton ib = (ImageButton)v.findViewById(R.id.favorite);
             if(c.getCount() >0){
                 int drbl = R.drawable.abc_btn_rating_star_on_mtrl_alpha;
-                v.setTag(R.string.isFavorite, true);
+                ib.setTag(R.string.isFavorite, true);
                 ib.setImageDrawable(getActivity().getDrawable(drbl));
             }
             final Movie m = movie;
@@ -69,28 +69,28 @@ public class DetailActivityFragment extends Fragment implements FetchTrailerAsyn
                     ImageButton ib = (ImageButton) v;
 
                     if (v.getTag(R.string.isFavorite) == null) {
-                        v.setTag(R.string.isFavorite, true);
+                        v.setTag(R.string.isFavorite, false);
                     }
                     int drbl;
                     SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");//dd/MM/yyyy
-                    String strDate = sdfDate.format( m.getRelease_date());
+                    String strDate = sdfDate.format(m.getRelease_date());
                     ContentValues movieDetails = new ContentValues();
-                    movieDetails.put(MovieContract.FavoriteEntry.COLUMN_MOVIE_ID, m.getId()+"");
+                    movieDetails.put(MovieContract.FavoriteEntry.COLUMN_MOVIE_ID, m.getId() + "");
                     movieDetails.put(MovieContract.FavoriteEntry.COLUMN_OVERVIEW, m.getSynopsis());
                     movieDetails.put(MovieContract.FavoriteEntry.COLUMN_POPULARITY, m.getPopularity());
                     movieDetails.put(MovieContract.FavoriteEntry.COLUMN_POSTER, m.getImageUrl());
                     movieDetails.put(MovieContract.FavoriteEntry.COLUMN_RATING, m.getVote_average());
-                    movieDetails.put(MovieContract.FavoriteEntry.COLUMN_RELEASE_DATE,strDate);
+                    movieDetails.put(MovieContract.FavoriteEntry.COLUMN_RELEASE_DATE, strDate);
                     movieDetails.put(MovieContract.FavoriteEntry.COLUMN_TITLE, m.getOriginal_title());
                     Boolean status = (Boolean) v.getTag(R.string.isFavorite);
                     if (status) {
                         drbl = R.drawable.abc_btn_rating_star_off_mtrl_alpha;
                         v.setTag(R.string.isFavorite, false);
-                        getActivity().getContentResolver().delete(MovieContract.FavoriteEntry.CONTENT_URI, "movie_id =?", new String[]{m.getId()+""});
+                        getActivity().getContentResolver().delete(MovieContract.FavoriteEntry.CONTENT_URI, "movie_id =?", new String[]{m.getId() + ""});
                     } else {
                         drbl = R.drawable.abc_btn_rating_star_on_mtrl_alpha;
                         v.setTag(R.string.isFavorite, true);
-                        getActivity().getContentResolver().insert(MovieContract.FavoriteEntry.CONTENT_URI,movieDetails);
+                        getActivity().getContentResolver().insert(MovieContract.FavoriteEntry.CONTENT_URI, movieDetails);
                     }
                     ib.setImageDrawable(getActivity().getDrawable(drbl));
                 }

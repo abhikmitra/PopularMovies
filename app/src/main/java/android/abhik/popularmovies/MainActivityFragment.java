@@ -34,8 +34,9 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     boolean enableInfiniteScroll = true;
     String sortByChoice;
     Account mAccount;
-    private static final int MOVIE_LOADER = 0;
-    private static final int FAV_LOADER = 1;
+    private static final int MOVIE_POP_LOADER = 0;
+    private static final int MOVIE_RATING_LOADER = 1;
+    private static final int FAV_LOADER = 2;
 
     public MainActivityFragment() {
 
@@ -45,9 +46,10 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAccount = CreateSyncAccount(this.getActivity());
-        getLoaderManager().initLoader(MOVIE_LOADER, null, this);
-        getLoaderManager().initLoader(FAV_LOADER, null, this);
+
     }
+
+
 
     public static Account CreateSyncAccount(Context context) {
         Account newAccount = new Account(
@@ -55,11 +57,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         AccountManager accountManager =
                 (AccountManager) context.getSystemService(
                         Context.ACCOUNT_SERVICE);
-        /*
-         * Add the account and account type, no password or user data
-         * If successful, return the Account object, otherwise report an error.
-         */
-        if (accountManager.addAccountExplicitly(newAccount, null, null)) {
+       if (accountManager.addAccountExplicitly(newAccount, null, null)) {
 
         } else {
 
@@ -69,14 +67,21 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        if(id == FAV_LOADER){
-            return new CursorLoader(getActivity(), MovieContract.FavoriteEntry.buildUriForMovies(), Constants.MOVIE_COLUMNS, null, null, null);
-        } else if(id== MOVIE_LOADER){
-            String sortOrder = MovieContract.MovieEntry.COLUMN_POPULARITY + " DESC";
-            return new CursorLoader(getActivity(), MovieContract.MovieEntry.buildUriForMovies(), Constants.MOVIE_COLUMNS, null, null, sortOrder);
+        String sortOrder;
+        switch (id){
+            case FAV_LOADER:
+                return new CursorLoader(getActivity(), MovieContract.FavoriteEntry.buildUriForMovies(), Constants.MOVIE_COLUMNS, null, null, null);
+
+            case MOVIE_POP_LOADER:
+                sortOrder = MovieContract.MovieEntry.COLUMN_POPULARITY + " DESC";
+                return new CursorLoader(getActivity(), MovieContract.MovieEntry.buildUriForMovies(), Constants.MOVIE_COLUMNS, null, null, sortOrder);
+            case MOVIE_RATING_LOADER:
+                sortOrder = MovieContract.MovieEntry.COLUMN_RATING + " DESC";
+                return new CursorLoader(getActivity(), MovieContract.MovieEntry.buildUriForMovies(), Constants.MOVIE_COLUMNS, null, null, sortOrder);
+            default: throw new UnsupportedOperationException("No such loader");
         }
-        String sortOrder = MovieContract.MovieEntry.COLUMN_POPULARITY + " DESC";
-        return new CursorLoader(getActivity(), MovieContract.MovieEntry.buildUriForMovies(), Constants.MOVIE_COLUMNS, null, null, sortOrder);
+
+
     }
 
     @Override
@@ -102,23 +107,56 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
             sortByChoice = sorting;
             popularMovies.resetPage();
             Log.i(TAG, "Resetting Page");
-            if(sorting == getString(R.string.pref_favorites)){
-
-                getLoaderManager().restartLoader(FAV_LOADER, null, this);
-            } else {
-                popularMovies.fetchMoviesFromServer(sortByChoice);
-                getLoaderManager().restartLoader(MOVIE_LOADER, null, this);
-            }
-
-            //getLoaderManager().restartLoader(MOVIE_LOADER, null, this);
-        } else {
-
+            destroyAllLoaders();
+            createLoaders(sorting);
+        } else{
+            restartLoaders(sortByChoice);
         }
 
 
     }
-    public void fetchFavoritesFromDb(){
-
+    private void restartLoaders(String sorting){
+        String pref_favorites =  getString(R.string.pref_favorites);
+        String pref_sort_popularity =  getString(R.string.pref_sort_popularity);
+        String pref_sort_vote =  getString(R.string.pref_sort_vote);
+        if(sorting.equals(pref_favorites)){
+            getLoaderManager().restartLoader(FAV_LOADER, null, this);
+            return;
+        }
+        if(sorting.equals(pref_sort_popularity)){
+            getLoaderManager().restartLoader(MOVIE_POP_LOADER, null, this);
+            return;
+        }
+        if(sorting.equals(pref_sort_vote)){
+            getLoaderManager().restartLoader(MOVIE_RATING_LOADER, null, this);
+            return;
+        }
+    }
+    private void destroyAllLoaders(){
+        getLoaderManager().destroyLoader(MOVIE_POP_LOADER);
+        getLoaderManager().destroyLoader(MOVIE_RATING_LOADER);
+        getLoaderManager().destroyLoader(FAV_LOADER);
+    }
+    private void createLoaders(String sorting){
+        String pref_favorites =  getString(R.string.pref_favorites);
+        String pref_sort_popularity =  getString(R.string.pref_sort_popularity);
+        String pref_sort_vote =  getString(R.string.pref_sort_vote);
+        if(sorting.equals(pref_favorites)){
+            getLoaderManager().initLoader(FAV_LOADER, null, this);
+            return;
+        }
+        if(sorting.equals(pref_sort_popularity)){
+            getActivity().getContentResolver().delete(MovieContract.MovieEntry.buildUriForMovies(),null,null);
+            popularMovies.fetchMoviesFromServer(sortByChoice);
+            getLoaderManager().initLoader(MOVIE_POP_LOADER, null, this);
+            return;
+        }
+        if(sorting.equals(pref_sort_vote)){
+            getActivity().getContentResolver().delete(MovieContract.MovieEntry.buildUriForMovies(),null,null);
+            popularMovies.fetchMoviesFromServer(sortByChoice);
+            getLoaderManager().initLoader(MOVIE_RATING_LOADER, null, this);
+            return;
+        }
     }
     @Override
     public void onSaveInstanceState(Bundle outState) {

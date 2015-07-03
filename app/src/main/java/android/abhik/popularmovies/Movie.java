@@ -79,6 +79,8 @@ public class Movie implements Parcelable {
     public Movie(String imageUrl, String original_title, String synopsis,Double vote_average, Date release_date, long id, Double popularity){
         if(imageUrl.indexOf("http")==-1){
             this.imageUrl = PREFIX_URL+imageUrl;
+        } else {
+            this.imageUrl = imageUrl;
         }
 
         this.original_title = original_title;
