@@ -8,11 +8,15 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ShareActionProvider;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -28,13 +32,50 @@ import java.util.ArrayList;
  */
 public class DetailActivityFragment extends Fragment implements FetchTrailerAsyncTask.Event,FetchReviewsAsync.Event {
 
-
+    private ShareActionProvider mShareActionProvider;
     public DetailActivityFragment() {
     }
     View view;
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+        getActivity().getMenuInflater().inflate(R.menu.menu_detail, menu);
+        MenuItem item = menu.findItem(R.id.menu_item_share);
+         mShareActionProvider = (ShareActionProvider) item.getActionProvider();
+
+    }
+    private void setShareIntent(Intent shareIntent) {
+        if (mShareActionProvider != null) {
+            mShareActionProvider.setShareIntent(shareIntent);
+        }
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            Intent settingsIntent = new Intent(getActivity(), SettingsActivity.class);
+            startActivity(settingsIntent);
+        }
+
+
+        return super.onOptionsItemSelected(item);
+    }
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
         View v = inflater.inflate(R.layout.fragment_detail, container, false);
         Movie movie = (Movie)getActivity().getIntent().getParcelableExtra(Movie.class.getName());
         if(movie==null){
@@ -107,12 +148,17 @@ public class DetailActivityFragment extends Fragment implements FetchTrailerAsyn
 
        LinearLayout ll = (LinearLayout) view.findViewById(R.id.trailer);
         int count = 1;
+        if(trailer.size()!=0){
+            setShareIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" + trailer.get(0))));
+        }
+
         for(String t:trailer){
             Button btn = new Button(getActivity());
             btn.setText("Trailer " + count);
             btn.setTag(R.string.trailerUrl, t);
             btn.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
             count++;
+
             btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

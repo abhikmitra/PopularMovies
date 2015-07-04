@@ -29,7 +29,6 @@ public class PopularMovies {
     private int nextPage;
     private Boolean shouldFetchMore;
     private ImageAdapter imageAdapter;
-    private boolean isLoading ;
     private Context context;
     private Account mAccount;
     public PopularMovies(int nextPage, Boolean shouldFetchMore, ImageAdapter imageAdapter, Context context, ArrayList<Movie> movies,Account mAccount){
@@ -37,7 +36,6 @@ public class PopularMovies {
         this.movies =movies;
         this.shouldFetchMore = shouldFetchMore;
         this.imageAdapter = imageAdapter;
-        isLoading = false;
         this.context = context;
         this.mAccount = mAccount;
     }
@@ -48,7 +46,6 @@ public class PopularMovies {
         }
         this.movies.addAll(movies);
         nextPage++;
-        isLoading = false;
         if(movies.size()==0){
             int duration = Toast.LENGTH_SHORT;
             Toast toast = Toast.makeText(context, "Could not fetch data", duration);
@@ -63,9 +60,7 @@ public class PopularMovies {
     }
 
     public void fetchMoviesFromServer(String sortBy){
-        if(!isLoading){
-            //new FetchMovieAsyncTask(this).execute(""+nextPage, sortBy);
-            isLoading = true;
+
             Bundle settingsBundle = new Bundle();
             settingsBundle.putBoolean(
                     ContentResolver.SYNC_EXTRAS_MANUAL, true);
@@ -74,7 +69,7 @@ public class PopularMovies {
             settingsBundle.putInt("nextPage",nextPage);
             settingsBundle.putString("sortBy",sortBy);
             ContentResolver.requestSync(mAccount, MovieContract.CONTENT_AUTHORITY, settingsBundle);
-        }
+
 
     }
     public Movie getMovieByPosition(int position){

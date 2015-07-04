@@ -1,14 +1,14 @@
 package android.abhik.popularmovies;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 
-public class MainActivity extends ActionBarActivity implements MainActivityFragment.Callback{
+public class MainActivity extends Activity implements MainActivityFragment.Callback{
     private boolean mTwoPane;
     private static final String DETAILFRAGMENT_TAG = "DFTAG";
 
@@ -31,6 +31,7 @@ public class MainActivity extends ActionBarActivity implements MainActivityFragm
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         if(findViewById(R.id.movie_detail_container)!=null) {
